@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clasificador de Formas</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ml5@0.12.2/dist/ml5.min.js"></script>
+</head>
+<body>
+<script>
+  let trianguloRectA = [];
+  let trianguloRectB = []; 
+  let trianguloRectC = []; 
+  let trianguloRectD = [];
+
+  let trianguloAcutA = [];
+  let trianguloAcutB = [];
+
+  let ShapeClassifier;
+
+  function preload() {
+    for (let i = 0; i < 100; i++) {
+      let index = nf((i + 1), 3, 0);
+
+      trianguloRectA[i] = loadImage(`data/trianguloRTA${index}.png`);
+      trianguloRectB[i] = loadImage(`data/trianguloRTB${index}.png`);
+      trianguloRectC[i] = loadImage(`data/trianguloRTC${index}.png`);
+      trianguloRectD[i] = loadImage(`data/trianguloRTAD${index}.png`);
+
+      // Acutángulos tipo A, B
+      trianguloAcutA[i] = loadImage(`data/trianguloACUTA${index}.png`);
+      trianguloAcutB[i] = loadImage(`data/trianguloACUTB${index}.png`);
+    }
+  }
+
+  function setup() {
+    let options = {
+      inputs: [64, 64, 4],
+      task: 'imageClassification',
+      debug: true
+    };
+
+    ShapeClassifier = ml5.neuralNetwork(options);
+
+    for (let i = 0; i < 100; i++) {
+      ShapeClassifier.addData({ image: trianguloRectA[i] }, { label: "RectanguloA" });
+      ShapeClassifier.addData({ image: trianguloRectB[i] }, { label: "RectanguloB" });
+      ShapeClassifier.addData({ image: trianguloRectC[i] }, { label: "RectanguloC" });
+      ShapeClassifier.addData({ image: trianguloRectD[i] }, { label: "RectanguloD" });
+
+      ShapeClassifier.addData({ image: trianguloAcutA[i] }, { label: "AcutanguloA" });
+      ShapeClassifier.addData({ image: trianguloAcutB[i] }, { label: "AcutanguloB" });
+    }
+
+    ShapeClassifier.normalizeData();
+    ShapeClassifier.train({ epochs: 50 }, finishedTraining);
+  }
+
+  function finishedTraining() {
+    console.log("✅ Entrenamiento finalizado");
+    ShapeClassifier.save(); 
+  }
+</script>
+</body>
+</html>
