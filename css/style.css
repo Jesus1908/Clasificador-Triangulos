@@ -47,4 +47,8 @@
       margin: 5px 0 0;
       font-weight: bold;
     }
-  
+
+    .activa {
+      border: 3px solid #4CAF50;
+      background-color: #e0ffe0;
+    }
